@@ -1,13 +1,15 @@
 
 class Book {
-  constructor(title) {
+  constructor(title,done) {
     this.title = title;
+    this.done=false;
 
   }
 
   static fromJSON(json) {
     return new Book(
       json.title,
+      json.done
    
     );
   }
@@ -34,7 +36,7 @@ class UI {
 
     const book = new Book(
       this.title.value,
-    
+      this.done
     );
 
     this.books.push(book);
@@ -84,7 +86,6 @@ class UI {
 
     tr.appendChild(tdTitle);
     tr.appendChild(tdCompleted);
-
     tr.appendChild(tdActions);
 
 
@@ -95,29 +96,50 @@ class UI {
   createRemoveBookButton(book) {
     const button = document.createElement('button');
 
-    button.setAttribute('class', 'btn btn-danger btn-sm');
-    button.innerHTML = 'X'
+    button.setAttribute('class', 'btn btn-light btn-sm');
+    button.innerHTML = ('&#128465');
     button.addEventListener('click', () => this.onRemoveBookClicked(book));
 
     return button;
   }
 
+  completedColor(done,button){
+    if (done === true) {
+      //   book.done = false;
+      button.style.color = 'white';
+      button.style.backgroundColor = 'green';
+       } else {
+        // book.done = true;
+         button.style.color = 'black';
+         button.style.backgroundColor = 'white';
+       }
+  }
+
   createCompletedButton(book) {
    const button = document.createElement('button');
+   this.completedColor(book.done,button)
+  
 
     button.setAttribute('class', 'btn btn-light btn-sm');
     button.innerHTML = ('&#10003');
 
+    button.addEventListener('click', function onClick(event) {
+      const backgroundColor = button.style.backgroundColor;
 
-    button.addEventListener('click', function onClick() {
+      if (book.done === false) {
+       book.done = true;
+       button.style.color = 'white';
+       button.style.backgroundColor = 'green';
+      } else {
+        book.done = false;
+        button.style.color = 'black';
+        button.style.backgroundColor = 'white';
+      }
+   
 
-      button.style.backgroundColor = 'green';
-      button.style.color = 'white';
-    });
+});
 
 
-   // button.addEventListener('click', () => this.onCompletedBookClicked(book));
-  //  button.addEventListener('click', (button.setAttribute('class', 'btn btn-success btn-sm')));
     return button;
   }
 
@@ -131,9 +153,10 @@ class UI {
   }
 
   onCompletedBookClicked(book) {
-    /*this.books = this.books.filter((x) => {
+   /* this.books = this.books.filter((x) => {
       return book.isbn !== x.isbn;
     });*/
+  
 
     this.saveBooksToLocalStorage();
     this.renderBookTable();
